@@ -21,7 +21,7 @@ package org.apache.submarine.server;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.submarine.server.database.utils.HibernateUtil;
 import org.apache.submarine.server.rest.provider.YamlEntityProvider;
-import org.apache.submarine.server.workbench.websocket.NotebookServer;
+// import org.apache.submarine.server.workbench.websocket.NotebookServer;
 import org.apache.submarine.commons.cluster.ClusterServer;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.Handler;
@@ -98,22 +98,22 @@ public class SubmarineServer extends ResourceConfig {
 
     // Add
     sharedServiceLocator = ServiceLocatorFactory.getInstance().create("shared-locator");
-    ServiceLocatorUtilities.enableImmediateScope(sharedServiceLocator);
-    ServiceLocatorUtilities.bind(
-        sharedServiceLocator,
-        new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bindAsContract(NotebookServer.class)
-                .to(WebSocketServlet.class)
-                .in(Singleton.class);
-          }
-        });
+    // ServiceLocatorUtilities.enableImmediateScope(sharedServiceLocator);
+    // ServiceLocatorUtilities.bind(
+    //     sharedServiceLocator,
+    //     new AbstractBinder() {
+    //       @Override
+    //       protected void configure() {
+    //         bindAsContract(NotebookServer.class)
+    //             .to(WebSocketServlet.class)
+    //             .in(Singleton.class);
+    //       }
+    //     });
 
     setupRestApiContextHandler(webApp, conf);
 
     // Notebook server
-    setupNotebookServer(webApp, conf, sharedServiceLocator);
+    // setupNotebookServer(webApp, conf, sharedServiceLocator);
 
     // Cluster Server
     // Cluster Server is useless for submarine now. Shield it to improve performance.
@@ -250,12 +250,12 @@ public class SubmarineServer extends ResourceConfig {
   private static void setupNotebookServer(WebAppContext webapp,
       SubmarineConfiguration conf, ServiceLocator serviceLocator) {
     String maxTextMessageSize = conf.getWebsocketMaxTextMessageSize();
-    final ServletHolder servletHolder =
-        new ServletHolder(serviceLocator.getService(NotebookServer.class));
-    servletHolder.setInitParameter("maxTextMessageSize", maxTextMessageSize);
+    // final ServletHolder servletHolder =
+    //     new ServletHolder(serviceLocator.getService(NotebookServer.class));
+    // servletHolder.setInitParameter("maxTextMessageSize", maxTextMessageSize);
 
     final ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-    webapp.addServlet(servletHolder, "/ws/*");
+    // webapp.addServlet(servletHolder, "/ws/*");
   }
 
   private static void setupClusterServer() {
