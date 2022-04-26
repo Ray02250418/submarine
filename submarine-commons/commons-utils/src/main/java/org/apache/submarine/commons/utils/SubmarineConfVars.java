@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 public class SubmarineConfVars {
   private static final Logger LOG = LoggerFactory.getLogger(SubmarineConfVars.class);
   public enum ConfVars {
+    TEST_CONFIG("test-config", 1001),
     SUBMARINE_CONF_DIR("submarine.conf.dir", "conf"),
     SUBMARINE_LOCALIZATION_MAX_ALLOWED_FILE_SIZE_MB(
         "submarine.localization.max-allowed-file-size-mb", 2048L),
