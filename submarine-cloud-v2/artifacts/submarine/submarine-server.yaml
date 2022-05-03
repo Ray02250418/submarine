@@ -47,20 +47,48 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: game-demo
+  name: submarine-config
 data:
-  # property-like keys; each key maps to a simple value
-  player_initial_lives: "3"
-  ui_properties_file_name: "user-interface.properties"
-
-  # file-like keys
-  game.properties: |
-    enemy.types=aliens,monsters
-    player.maximum-lives=5    
-  user-interface.properties: |
-    color.good=purple
-    color.bad=yellow
-    allow.textmode=true    
+  SUBMARINE_SERVER_PORT: "8080"
+  SUBMARINE_SERVER_PORT_8080_TCP: "8080"
+  K8S_APISERVER_URL: kubernetes.default.svc
+  SUBMARINE_CONF_DIR: conf
+  SUBMARINE_LOCALIZATION_MAX_ALLOWED_FILE_SIZE_MB: "2048"
+  SUBMARINE_SERVER_ADDR: "0.0.0.0"
+  SUBMARINE_SERVER_SSL: "false"
+  SUBMARINE_SERVER_SSL_PORT: "8443"
+  SUBMARINE_SERVER_JETTY_THREAD_POOL_MAX: "400"
+  SUBMARINE_SERVER_JETTY_THREAD_POOL_MIN: "8"
+  SUBMARINE_SERVER_JETTY_THREAD_POOL_TIMEOUT: "30"
+  SUBMARINE_SERVER_JETTY_REQUEST_HEADER_SIZE: "8192"
+  SUBMARINE_SERVER_SSL_CLIENT_AUTH: "false"
+  SUBMARINE_SERVER_SSL_KEYSTORE_PATH: keystore
+  SUBMARINE_SERVER_SSL_KEYSTORE_TYPE: JKS
+  SUBMARINE_SERVER_SSL_KEYSTORE_PASSWORD: ""
+  SUBMARINE_SERVER_SSL_KEY_MANAGER_PASSWORD: "" # Save as null in SubmarineConfVars.java
+  SUBMARINE_SERVER_SSL_TRUSTSTORE_PATH: "" # Save as null in SubmarineConfVars.java
+  SUBMARINE_SERVER_SSL_TRUSTSTORE_TYPE: "" # Save as null in SubmarineConfVars.java
+  SUBMARINE_SERVER_SSL_TRUSTSTORE_PASSWORD: "" # Save as null in SubmarineConfVars.java
+  SUBMARINE_CLUSTER_ADDR: ""
+  SUBMARINE_SERVER_RPC_ENABLED: "false"
+  SUBMARINE_SERVER_RPC_PORT: "8980"
+  CLUSTER_HEARTBEAT_INTERVAL: "3000"
+  CLUSTER_HEARTBEAT_TIMEOUT: "9000"
+  JDBC_DRIVERCLASSNAME: com.mysql.jdbc.Driver
+  JDBC_URL: jdbc:mysql://127.0.0.1:3306/submarine?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&allowMultiQueries=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=UTC&useTimezone=true&useLegacyDatetimeCode=true
+  JDBC_USERNAME: submarine
+  JDBC_PASSWORD: password
+  METASTORE_JDBC_URL: jdbc:mysql://127.0.0.1:3306/metastore?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull&useSSL=false
+  METASTORE_JDBC_USERNAME: metastore
+  METASTORE_JDBC_PASSWORD: password
+  SUBMARINE_NOTEBOOK_DEFAULT_OVERWRITE_JSON: ""
+  WORKBENCH_WEBSOCKET_MAX_TEXT_MESSAGE_SIZE: "1024000"
+  WORKBENCH_WEB_WAR: submarine-workbench/workbench-web/dist
+  SUBMARINE_RUNTIME_CLASS: org.apache.submarine.server.submitter.yarn.YarnRuntimeFactory
+  SUBMARINE_SUBMITTER: k8s
+  SUBMARINE_SERVER_SERVICE_NAME: submarine-server
+  ENVIRONMENT_CONDA_MIN_VERSION: "4.0.1"
+  ENVIRONMENT_CONDA_MAX_VERSION: "4.11.10"
 ---
 # Source: submarine/templates/submarine-server.yaml
 apiVersion: apps/v1
@@ -107,15 +135,11 @@ spec:
           emptyDir: { }
       containers:
       - name: "submarine-server"
-        env:
-        - name: SUBMARINE_SERVER_PORT
-          value: "8080"
-        - name: SUBMARINE_SERVER_PORT_8080_TCP
-          value: "8080"
-        - name: K8S_APISERVER_URL
-          value: "kubernetes.default.svc"
 
         image: "apache/submarine:server-0.8.0-SNAPSHOT"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: submarine-config
