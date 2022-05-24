@@ -117,6 +117,8 @@ public class SubmarineConfVars {
       this.longValue = -1;
       this.booleanValue = false;
       this.type = VarType.STRING;
+      LOG.info(this.varName);
+      LOG.info(this.stringValue);
     }
 
     ConfVars(String varName, int intValue) {
